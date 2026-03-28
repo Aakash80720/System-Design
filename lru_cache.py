@@ -1,3 +1,4 @@
+import unittest
 class Node:
     def __init__(self, key, value):
         self.key = key
@@ -52,42 +53,43 @@ class LRUCache:
             current = current.next
         print("NULL")
     
-    class LRUInstructionFactory:
-        @staticmethod
-        def excute_instruction(cache, instruction):
-            if instruction[0] == "get":
-                return cache.get(instruction[1])
-            elif instruction[0] == "display":
-                cache.display()
-            elif instruction[0] == "LRUCache":
-                return LRUCache(instruction[1])
-            elif instruction[0] == "put":
-                cache.put(instruction[1], instruction[2])
+class LRUInstructionFactory:
+    @staticmethod
+    def excute_instruction(cache, instruction):
+        if instruction[0] == "get":
+            return cache.get(instruction[1])
+        elif instruction[0] == "display":
+            cache.display()
+        elif instruction[0] == "LRUCache":
+            return LRUCache(instruction[1])
+        elif instruction[0] == "put":
+            cache.put(instruction[1], instruction[2])
+
+class TestLRUCache(unittest.TestCase):
+    def test_lru_cache(self):
+        instructions = [
+            ["LRUCache", 2],
+            ["put", 1, 1],
+            ["put", 2, 2],
+            ["get", 1],
+            ["put", 3, 3],
+            ["get", 2],
+            ["put", 4, 4],
+             ["get", 1],
+             ["get", 3],
+             ["get", 4]
+        ]
+        expected_output = [None, None, None, 1, None, -1, None, -1, 3, 4]
+        cache = None
+        results = []
+        for instruction in instructions:
+            if instruction[0] == "LRUCache":
+                cache = LRUInstructionFactory.excute_instruction(cache, instruction)
+                results.append(None) 
+            else:
+                result = LRUInstructionFactory.excute_instruction(cache, instruction)
+            results.append(result)
+        self.assertEqual(results, expected_output)  
 # Example usage:
 if __name__ == "__main__":
-    instructions = [
-        ["LRUCache", 2],
-        ["put", 1, 1],
-        ['display'],
-        ["put", 2, 2],
-        ['display'],
-        ["get", 1],
-        ['display'],
-        ["put", 3, 3],
-        ['display'],
-        ["get", 2],
-        ['display'],
-        ["put", 4, 4],
-        ['display'],
-        ["get", 3],
-        ["get", 4],
-        ["display"]
-    ]
-
-    cache = None
-    for instruction in instructions:
-        result = LRUCache.LRUInstructionFactory.excute_instruction(cache, instruction)
-        if instruction[0] == "LRUCache":
-            cache = result
-
-    
+    unittest.main()

@@ -1,5 +1,5 @@
 from collections import defaultdict
-
+import unittest
 class Node:
     def __init__(self, key, value):
         self.key = key
@@ -101,27 +101,32 @@ class LFUInstructionFactory:
         elif instruction[0] == "LFUCache":
             return LFUCache(instruction[1])
         
+class RunTestCases(unittest.TestCase):
+    def test_case_1(self):
+        instructions = [
+            ["LFUCache", 2],
+            ["put", 2, 1],
+            ["put", 3, 2],
+            ["get", 3],
+            ["get", 2],
+            ["put", 4, 3],
+            ["get", 2],
+            ["get", 3],
+            ["get", 4]
+        ]
+        expected_output = [None, None, None, 2, 1, None, 1, -1, 3]
+        cache = None
+        results = []
+        for instruction in instructions:
+            if instruction[0] == "LFUCache":
+                cache = LFUInstructionFactory.excute_instruction(cache, instruction)
+                results.append(None)
+            else:
+                result = LFUInstructionFactory.excute_instruction(cache, instruction)
+                results.append(result)
+        self.assertEqual(results, expected_output)
+
+
+        
 if __name__ == "__main__":
-    """["LFUCache","put","put","get","get","put","get","get","get"]
-[[2],[2,1],[3,2],[3],[2],[4,3],[2],[3],[4]]"""
-    instructions = [
-        ["LFUCache", 2],
-        ["put", 2, 1],
-        ["put", 3, 2],
-        ["get", 3],
-        ["get", 2],
-        ["put", 4, 3],
-        ["get", 2],
-        ["get", 3],
-        ["get", 4]
-    ]
-    """Expected Output:
-[null,null,null,2,1,null,1,-1,3]"""
-    cache = None
-    for instruction in instructions:
-        if instruction[0] == "LFUCache":
-            cache = LFUInstructionFactory.excute_instruction(cache, instruction)
-        else:
-            result = LFUInstructionFactory.excute_instruction(cache, instruction)
-            if result is not None:
-                print(result)
+    unittest.main()
